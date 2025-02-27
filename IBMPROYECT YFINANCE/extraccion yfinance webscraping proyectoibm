@@ -1,0 +1,431 @@
+# %%
+# Importar la biblioteca yfinance
+import yfinance as yf
+
+# Descargar datos bursátiles de Tesla (TSLA) para el último año
+tesla_data = yf.download('TSLA', start='2022-01-01', end='2023-01-01')
+
+# Restablecer el índice
+tesla_data.reset_index(inplace=True)
+
+# Guardar el marco de datos en un archivo CSV
+tesla_data.to_csv('tesla_data.csv', index=False)
+
+# Visualizar las cinco primeras filas del marco de datos
+print(tesla_data.head())
+
+# %%
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd 
+
+# %%
+import requests
+from bs4 import BeautifulSoup
+import pandas as pd
+
+# URL de la página con los ingresos de Tesla
+url = 'https://es.statista.com/estadisticas/1271839/ingresos-de-tesla/'
+
+# Realizar la solicitud a la página web
+response = requests.get(url)
+soup = BeautifulSoup(response.text, 'html.parser')
+
+# Encontrar la tabla que contiene los ingresos
+# Nota: Debes inspeccionar la página para encontrar la estructura correcta
+table = soup.find('table')  # Ajusta esto según la estructura de la página
+
+# Crear listas para almacenar los datos
+data = []
+for row in table.find_all('tr'):
+    cols = row.find_all('td')
+    cols = [ele.text.strip() for ele in cols]
+    if cols:  # Asegurarse de que la fila no esté vacía
+        data.append(cols)
+
+# Crear un DataFrame de Pandas
+# Ajusta los nombres de las columnas según la tabla que hayas extraído
+tesla_revenue = pd.DataFrame(data, columns=['Fecha', 'Ingresos'])
+
+# Mostrar las cinco últimas filas del marco de datos
+print(tesla_revenue.tail())
+
+# %%
+import requests
+from bs4 import BeautifulSoup
+
+# URL de la página de divulgación trimestral de Tesla
+url = 'https://ir.tesla.com/#quarterly-disclosure'
+
+# Hacer una solicitud GET a la página
+response = requests.get(url)
+
+# Verifica que la solicitud haya tenido éxito
+if response.status_code == 200:
+    # Analiza el contenido HTML
+    soup = BeautifulSoup(response.text, 'html.parser')
+    
+    # Encuentra la tabla que contiene los datos de ingresos
+    # Debes ajustar el selector de acuerdo a la estructura HTML de la página
+    table = soup.find('table')  # Reemplaza esto con el selector adecuado
+    rows = table.find_all('tr')
+
+    # Itera sobre las filas y extrae los datos
+    for row in rows:
+        columns = row.find_all('td')
+        if columns:
+            fecha = columns[0].text.strip()  # Suponiendo que la fecha está en la primera columna
+            ingresos = columns[1].text.strip()  # Y los ingresos en la segunda
+            print(f'Fecha: {fecha}, Ingresos: {ingresos}')
+else:
+    print(f'Error al acceder a la página: {response.status_code}')
+
+# %%
+import yfinance as yf
+import pandas as pd
+
+# Descargar datos bursátiles de GameStop (GME)
+gme_data = yf.download('GME', start='2021-01-01', end='2023-01-01')
+
+# Restablecer el índice
+gme_data.reset_index(inplace=True)
+
+# Mostrar las cinco primeras filas del DataFrame
+print(gme_data.head())
+
+# %%
+import requests
+import pandas as pd
+from bs4 import BeautifulSoup
+
+# URL de la página de ingresos de GME
+url = 'https://www.ejemplo.com/gme-revenue'
+response = requests.get(url)
+
+# Parsear el contenido HTML
+soup = BeautifulSoup(response.text, 'html.parser')
+
+# Encontrar la tabla específica (ajusta el selector según la estructura HTML)
+table = soup.find('table')
+
+# Listas para almacenar los datos
+fechas = []
+ingresos = []
+
+# Iterar sobre las filas de la tabla
+for row in table.find_all('tr')[1:]:  # evita el encabezado
+    cols = row.find_all('td')
+    fechas.append(cols[0].text)
+    ingresos.append(cols[1].text)
+
+# Crear un DataFrame
+gme_revenue = pd.DataFrame({'Fecha': fechas, 'Ingresos': ingresos})
+
+# Mostrar las cinco últimas filas
+print(gme_revenue.tail())
+
+# %%
+if table is not None:
+    for row in table.find_all('tr')[1:]:
+        cols = row.find_all('td')
+        # process columns here
+else:
+    print("Table not found!")
+
+# %%
+import pandas as pd
+
+# Crear un DataFrame con fechas e ingresos
+data = {
+    'Fecha Ingresos': [11, 12, 13, 14, 15],
+    'Ingresos': ['-', '-', '-', '-', '-']
+}
+
+df = pd.DataFrame(data)
+
+# Mostrar el DataFrame
+print(df)
+
+# %%
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# %%
+import pandas as pd
+
+df = pd.read_csv(tesla_data.csv)  # Asegúrate de que el nombre sea correcto.
+
+# %%
+tesla_data.csv
+
+# %%
+import pandas as pd
+
+# Creando un DataFrame a partir de un diccionario
+data = {
+    'Fecha': [11, 12, 13, 14, 15],
+    'Ingresos': ['-', '-', '-', '-', '-']
+}
+
+df = pd.DataFrame(data)
+
+# Mostrando el DataFrame
+print(df)
+
+# Acceso a una fila específica
+fila_11 = df[df['Fecha'] == 11]
+print("\nFila para Fecha 11:")
+print(fila_11)
+
+# Ejemplo de cómo reemplazar '-' por un valor específico, si fuera necesario
+df.replace('-', 0, inplace=True)  # Reemplaza '-' con 0
+
+print("\nDataFrame después de reemplazar '-':")
+print(df)
+
+# %%
+df = pd.read_csv('tesla_data.csv')  # Ensure the filename is a string and correctly specified
+
+
+# %%
+import pandas as pd
+
+# Load data from CSV
+df = pd.read_csv('tesla_data.csv')
+
+# Validate if DataFrame is loaded
+if df is not None:
+    print(df.head())
+
+# Replace '-' with 0 and ensure correct dtype
+df.replace('-', 0, inplace=True)
+df = df.astype({'Ingresos': 'int'})  # Adjust according to the column being affected
+
+# Print the cleaned DataFrame
+print(df)
+
+# %%
+print(df.columns.tolist())
+
+# %%
+df.columns = df.columns.str.strip()
+
+# %%
+df.replace('-', 0, inplace=True)
+
+# %%
+# Check the columns in the DataFrame
+print(df.columns.tolist())
+
+# Strip whitespace from column names, if necessary
+df.columns = df.columns.str.strip()
+
+# Replace '-' with 0
+df.replace('-', 0, inplace=True)
+
+# Attempt the conversion again
+if 'Ingresos' in df.columns:
+    df['Ingresos'] = df['Ingresos'].astype(int)
+else:
+    print("Column 'Ingresos' not found")
+
+# %%
+import pandas as pd
+
+# Crear un DataFrame inicial
+data = {
+    'Fecha': [11, 12, 13, 14, 15],
+    'Ingresos': ['-', '-', '-', '-', '-']
+}
+
+df = pd.DataFrame(data)
+
+# Mostrar el DataFrame
+print("DataFrame Inicial:")
+print(df)
+
+# Lógica para agregar ingresos
+def agregar_ingreso(fecha, valor):
+    global df
+    if fecha in df['Fecha'].values:
+        df.loc[df['Fecha'] == fecha, 'Ingresos'] = valor
+    else:
+        print("Fecha no encontrada")
+
+# Ejemplo de uso de la función
+agregar_ingreso(12, 1000)
+agregar_ingreso(13, 500)
+
+# Mostrar el DataFrame actualizado
+print("\nDataFrame Actualizado:")
+print(df)
+
+# %%
+import pandas as pd
+
+# Crear un DataFrame con fechas e ingresos
+data = {
+    'Fecha': [11, 12, 13, 14, 15],
+    'Ingresos': ['-', '-', '-', '-', '-']
+}
+
+df = pd.DataFrame(data)
+
+# Mostrar el DataFrame
+print(df)
+
+# %%
+import pandas as pd
+
+# Crear un DataFrame con fechas e ingresos
+data = {
+    'Fecha': [11, 12, 13, 14, 15],
+    'Ingresos': ['-', 1000, 500, '-', '-']  # Asumiendo que 1000 y 500 son los ingresos para el 12 y 13
+}
+
+df = pd.DataFrame(data)
+
+# Mostrar el DataFrame inicial
+print("DataFrame Inicial:")
+print(df)
+
+# Reemplazar '-' con 0 para facilitar cálculos
+df.replace('-', 0, inplace=True)
+
+# Convertir la columna 'Ingresos' a tipo numérico
+df['Ingresos'] = pd.to_numeric(df['Ingresos'])
+
+# Mostrar el DataFrame actualizado
+print("\nDataFrame Actualizado:")
+print(df)
+
+# Calcular el total de ingresos
+total_ingresos = df['Ingresos'].sum()
+print(f"\nTotal de Ingresos: {total_ingresos}")
+
+# %%
+import requests
+import pandas as pd
+from bs4 import BeautifulSoup
+
+# Paso 1: Realizar una solicitud HTTP a la página web de Tesla
+url = 'https://ir.tesla.com/#quarterly-disclosure'
+response = requests.get(url)
+
+# Paso 2: Analizar la página con BeautifulSoup
+soup = BeautifulSoup(response.content, 'html.parser')
+
+# Paso 3: Inspeccionar la página y encontrar la tabla que contiene los datos (utilizaremos pandas para leer la tabla)
+# La página utiliza un formato interactivo, pero podemos obtener los datos a través de la tabla en formato HTML
+# Buscaremos el bloque con los datos financieros relevantes
+
+# Encontrar la tabla (en este caso, parece que hay una tabla que contiene los ingresos)
+table = soup.find('table')
+
+# Paso 4: Crear un DataFrame de Pandas a partir de la tabla
+# Usamos pandas para leer las tablas HTML directamente
+gme_revenue = pd.read_html(str(table))[0]  # La función read_html devuelve una lista de DataFrames, usamos el primero
+
+# Paso 5: Mostrar las últimas 5 filas usando la función tail()
+print(gme_revenue.tail())
+
+
+# %%
+import requests
+import pandas as pd
+from bs4 import BeautifulSoup
+from io import StringIO  # Importar StringIO para manejar el HTML como un archivo
+
+# Paso 1: Realizar una solicitud HTTP a la página web de Tesla
+url = 'https://ir.tesla.com/#quarterly-disclosure'
+response = requests.get(url)
+
+# Paso 2: Analizar la página con BeautifulSoup
+soup = BeautifulSoup(response.content, 'html.parser')
+
+# Paso 3: Inspeccionar la página y encontrar la tabla que contiene los datos (utilizaremos pandas para leer la tabla)
+# La página utiliza un formato interactivo, pero podemos obtener los datos a través de la tabla en formato HTML
+# Buscaremos el bloque con los datos financieros relevantes
+
+# Encontrar la tabla (en este caso, parece que hay una tabla que contiene los ingresos)
+table = soup.find('table')
+
+# Paso 4: Convertir el contenido HTML de la tabla a un objeto StringIO
+table_html = str(table)  # Convertir la tabla a una cadena HTML
+table_io = StringIO(table_html)  # Convertir la cadena HTML a un objeto StringIO
+
+# Paso 5: Crear un DataFrame de Pandas a partir de la tabla usando read_html
+gme_revenue = pd.read_html(table_io)[0]  # La función read_html devuelve una lista de DataFrames, usamos el primero
+
+# Paso 6: Mostrar las últimas 5 filas usando la función tail()
+print(gme_revenue.tail())
+
+
+# %%
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Supongamos que tienes un DataFrame con datos de acciones de Tesla
+# Aquí hay un ejemplo de cómo podría verse el DataFrame
+data = {
+    'Fecha': ['2022-01-03', '2022-01-04', '2022-01-05', '2022-01-06', '2022-01-07'],
+    'Cierre': [399.93, 383.20, 362.71, 354.90, 342.32]
+}
+
+tesla_data = pd.DataFrame(data)
+
+# Convertir la columna 'Fecha' a tipo datetime
+tesla_data['Fecha'] = pd.to_datetime(tesla_data['Fecha'])
+
+# Definir la función make_graph
+def make_graph(data):
+    plt.figure(figsize=(10, 5))
+    plt.plot(data['Fecha'], data['Cierre'], marker='o', color='b', label='Precio de Cierre')
+    plt.title('Acciones de Tesla')
+    plt.xlabel('Fecha')
+    plt.ylabel('Precio de Cierre (USD)')
+    plt.xticks(rotation=45)
+    plt.grid()
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+# Llamar a la función para crear el gráfico
+make_graph(tesla_data)
+
+# %%
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Supongamos que tienes un DataFrame con datos de acciones de GameStop
+# Aquí hay un ejemplo de cómo podría verse el DataFrame
+data = {
+    'Fecha': ['2021-01-04', '2021-01-05', '2021-01-06', '2021-01-07', '2021-01-08'],
+    'Cierre': [4.31, 4.34, 4.59, 4.52, 4.42]
+}
+
+gamestop_data = pd.DataFrame(data)
+
+# Convertir la columna 'Fecha' a tipo datetime
+gamestop_data['Fecha'] = pd.to_datetime(gamestop_data['Fecha'])
+
+# Definir la función make_graph
+def make_graph(data):
+    plt.figure(figsize=(10, 5))
+    plt.plot(data['Fecha'], data['Cierre'], marker='o', color='r', label='Precio de Cierre')
+    plt.title('Acciones de GameStop')
+    plt.xlabel('Fecha')
+    plt.ylabel('Precio de Cierre (USD)')
+    plt.xticks(rotation=45)
+    plt.grid()
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+# Llamar a la función para crear el gráfico
+make_graph(gamestop_data)
+
+# %%
+
+
+
